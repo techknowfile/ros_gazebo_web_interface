@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="style.css">
+<title>Gazebo Web Interface Project</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<div id="Contents" class="toc"><h1 id="Contents">Contents</h1></div>
+<ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project">Gazebo Web Interface Project</a>
+
+<ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Resources">Resources</a>
+
+<ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Resources-User Camera">User Camera</a>
+
+</ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Goal Overview">Goal Overview</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-View Gazebo camera feed from web interface">View Gazebo camera feed from web interface</a>
+
+<ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-View Gazebo camera feed from web interface-Requirements">Requirements</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using web_video_server">Using web_video_server</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using mjpegcanvasjs">Using mjpegcanvasjs</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-View Gazebo camera feed from web interface-Publishing camera sensor to ROS topic">Publishing camera sensor to ROS topic</a>
+
+</ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Select Gazebo Visuals from web interface">Select Gazebo Visuals from web interface</a>
+
+<ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Select Gazebo Visuals from web interface-Requirements">Requirements</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Select Gazebo Visuals from web interface-SystemGUI plugin">SystemGUI plugin</a>
+
+</ul>
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Asyncronously generate buttons on web UI based on selected visual">Asyncronously generate buttons on web UI based on selected visual</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Perform actions on Gazebo client based on button visual">Perform actions on Gazebo client based on button visual</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Asyncronously generate buttons on web UI based on selected visual">Asyncronously generate buttons on web UI based on selected visual</a>
+
+<li>
+<a href="Gazebo Web Interface Project.html#Gazebo Web Interface Project-Perform actions on Gazebo client based on button visual">Perform actions on Gazebo client based on button visual</a>
+
+</ul>
+</ul>
+
+<div id="Gazebo Web Interface Project"><h1 id="Gazebo Web Interface Project">Gazebo Web Interface Project</h1></div>
+<div id="Gazebo Web Interface Project-Resources"><h2 id="Resources">Resources</h2></div>
+<p>
+<a href="https:&#47;&#47;bitbucket.org&#47;osrf&#47;gazebo&#47;src&#47;82b3f2539fe8027b36dc6b32b12ed586da2dd8c1&#47;gazebo&#47;rendering&#47;Scene.hh?at=default&amp;fileviewer=file-view-default#cl-309 ">Scene.hh (see GetFirstContact and similar)</a>
+<a href="http:&#47;&#47;answers.gazebosim.org&#47;question&#47;9050&#47;setting-goal-position-with-gazebo&#47; ">Setting goal position with gazebo. (for mouse position)</a>
+</p>
+
+<div id="Gazebo Web Interface Project-Resources-User Camera"><h3 id="User Camera">User Camera</h3></div>
+<p>
+<a href="http:&#47;&#47;answers.gazebosim.org&#47;question&#47;6239&#47;gazebo-30-system-plugin-tutorial-crashing&#47; ">Plugin crashes gazebo - access camera before rendering engine initialized</a>
+</p>
+
+<div id="Gazebo Web Interface Project-Goal Overview"><h2 id="Goal Overview">Goal Overview</h2></div>
+<ul>
+<li>
+View Gazebo camera feed from web interface
+
+<li>
+Select Gazebo Visuals from web interface
+
+<li>
+Asyncronously generate buttons on web UI based on selected visual 
+
+<li>
+Perform actions on Gazebo client based on button visual
+
+<li>
+... mechanical turk integration
+
+</ul>
+
+<div id="Gazebo Web Interface Project-General comments"><h2 id="General comments">General comments</h2></div>
+<ul>
+<li>
+I was initially warned against using a non-indigo version of ROS due to potential compatibility issues. ROS-Indigo requires Ubuntu 14.04, whereas Kinetic requires 16.04, so system was installed with Ubuntu 14.04, ROS-Indigo, and Gazebo 2.2. Indeed, the site for Gazebo implementation of Fetch robots indicated that only ros-indigo was supported, though upon further analysis, they appear to have a <a href="https:&#47;&#47;github.com&#47;fetchrobotics&#47;fetch_gazebo&#47;tree&#47;gazebo7Gazebo ">Gazebo 7 branch on Github</a>.
+
+</ul>
+  
+<p>
+  As one might imagine, there have been significant changes from gz2 to gz8, and gz2 is no longer supported by anyone in much capacity. Switching to the latest Ubuntu distro in the future should be considered.
+</p>
+  
+
+<div id="Gazebo Web Interface Project-View Gazebo camera feed from web interface"><h2 id="View Gazebo camera feed from web interface">View Gazebo camera feed from web interface</h2></div>
+<div id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Requirements"><h3 id="Requirements">Requirements</h3></div>
+<ul>
+<li>
+RobotWebTools web_video_server - 
+
+<ul>
+<li>
+<a href="https:&#47;&#47;github.com&#47;RobotWebTools&#47;web_video_server">https://github.com/RobotWebTools/web_video_server</a>
+
+<li>
+clone into catkin_ws/src and build
+
+</ul>
+<li>
+mjpegcanvasjs - a JavaScript tool that allows for an easy way to display, manage, and modify ROS image streams from web_video_server. 
+
+<ul>
+<li>
+<a href="https:&#47;&#47;github.com&#47;rctoris&#47;mjpegcanvasjs">https://github.com/rctoris/mjpegcanvasjs</a>
+
+</ul>
+<li>
+Gazebo ROS Camera Sensor plugin
+
+<ul>
+<li>
+~~I built the light sensor from <a href="http:&#47;&#47;www.theconstructsim.com&#47;create-a-ros-sensor-plugin-for-gazebo&#47;">http://www.theconstructsim.com/create-a-ros-sensor-plugin-for-gazebo/</a> because my initial attempt at using the plugin by itself by &lt;include&gt;'ing it in the world file didn't work, but this shouldn't be necessary. As long as the camera is being included in the .world file as a &lt;model&gt;, should be able to use libgazebo_ros_camera.so~~
+<br />      <span id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Requirements-UPDATE:"></span><strong id="UPDATE:">UPDATE:</strong> Confirmed use of libgazebo_ros_camera.so instead of using separate camera plugin.
+
+<li>
+Requires libgazebo_ros_api_plugin.so be included as system plugin 
+
+</ul>
+<li>
+Additionally, using Django Web Framework for MVC architecture
+
+</ul>
+
+<div id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using web_video_server"><h3 id="Using web_video_server">Using web_video_server</h3></div>
+<p>
+<span id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using web_video_server-Before you begin:"></span><strong id="Before you begin:">Before you begin:</strong>
+</p>
+<ul>
+<li>
+Start ROS+Gazebo with world that publishes camera data
+
+<li>
+Verify that catkin workspace is included in shell config file
+
+<li>
+Verify ROS camera topics are available: <code>rostopic list</code>
+
+</ul>
+
+<p>
+<span id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using web_video_server-To run the RobotWebTools web_video_server:"></span><strong id="To run the RobotWebTools web_video_server:">To run the RobotWebTools web_video_server:</strong>
+</p>
+<ul>
+<li>
+Run the command <code>rosrun web_video_server web_video_server</code>
+<br />    Camera topic streams at <a href="http:&#47;&#47;localhost:8080&#47;">http://localhost:8080/</a>
+<br />    For full documentation, see the ROS wiki <a href="http:&#47;&#47;wiki.ros.org&#47;web_video_server">http://wiki.ros.org/web_video_server</a>
+
+</ul>
+
+<div id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using mjpegcanvasjs"><h3 id="Using mjpegcanvasjs">Using mjpegcanvasjs</h3></div>
+<p>
+<span id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Using mjpegcanvasjs-To embed mjpeg stream from web_video_server into a canvas:"></span><strong id="To embed mjpeg stream from web_video_server into a canvas:">To embed mjpeg stream from web_video_server into a canvas:</strong>
+</p>
+<ul>
+<li>
+In the head of the html file, include:
+<pre>
+&lt;script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="http://cdn.robotwebtools.org/mjpegcanvasjs/current/mjpegcanvas.min.js"&gt;&lt;/script&gt;
+
+&lt;script type="text/javascript"&gt;
+  /**
+   * Setup all GUI elements when the page is loaded.
+   */
+  function init() {
+      var viewer = new MJPEGCANVAS.Viewer({
+          divID : 'mjpeg',
+          host : 'localhost',
+          width : '1000',
+          height : '800',
+          topic : '/TOPIC/NAME/HERE'
+      });
+&lt;/script&gt;
+</pre>
+
+<li>
+Modify the &lt;body /&gt; as follows:
+<pre html>
+&lt;body onload="init()"&gt;
+    &lt;div id="mjpeg"&gt;&lt;/div&gt;        
+&lt;/body&gt;
+</pre>
+
+<li>
+The canvas will be loaded inside of the #mjpeg div, and thus can be accessed in JavaScript with <code>canvas = document.querySelector('#mjpeg canvas');</code>
+
+</ul>
+
+<div id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Publishing camera sensor to ROS topic"><h3 id="Publishing camera sensor to ROS topic">Publishing camera sensor to ROS topic</h3></div>
+<p>
+<span id="Gazebo Web Interface Project-View Gazebo camera feed from web interface-Publishing camera sensor to ROS topic-In your .sdf file:"></span><strong id="In your .sdf file:">In your .sdf file:</strong>
+</p>
+<pre>
+&lt;sdf ...&gt;
+   &lt;world ...&gt;
+        ...
+        &lt;model name='CAMERA_NAME_HERE'&gt;
+            ...
+            &lt;link name='LINK_NAME_HERE'&gt;
+                ...
+                &lt;sensor name='CAMERA_NAME' type='camera'&gt;
+                    &lt;camera name='__default__'&gt;
+                      &lt;horizontal_fov&gt;1.047&lt;/horizontal_fov&gt;
+                      &lt;image&gt;
+                        &lt;width&gt;1000&lt;/width&gt;
+                        &lt;height&gt;800&lt;/height&gt;
+                      &lt;/image&gt;
+                      &lt;clip&gt;
+                        &lt;near&gt;0.1&lt;/near&gt;
+                        &lt;far&gt;100&lt;/far&gt;
+                      &lt;/clip&gt;
+                   &lt;/camera&gt;
+                   &lt;plugin name="gazebo_light_sensor_plugin" filename="libgazebo_light_sensor_plugin.so"&gt;
+                     &lt;cameraName&gt;camera&lt;/cameraName&gt;
+                     &lt;alwaysOn&gt;true&lt;/alwaysOn&gt;
+                     &lt;updateRate&gt;10&lt;/updateRate&gt;
+                     &lt;imageTopicName&gt;rgb/image_raw&lt;/imageTopicName&gt;
+                     &lt;depthImageTopicName&gt;depth/image_raw&lt;/depthImageTopicName&gt;
+                     &lt;pointCloudTopicName&gt;depth/points&lt;/pointCloudTopicName&gt;
+                     &lt;cameraInfoTopicName&gt;rgb/camera_info&lt;/cameraInfoTopicName&gt;
+                     &lt;depthImageCameraInfoTopicName&gt;depth/camera_info&lt;/depthImageCameraInfoTopicName&gt;
+                     &lt;frameName&gt;camera_depth_optical_frame&lt;/frameName&gt;
+                     &lt;baseline&gt;0.1&lt;/baseline&gt;
+                     &lt;distortion_k1&gt;0.0&lt;/distortion_k1&gt;
+                     &lt;distortion_k2&gt;0.0&lt;/distortion_k2&gt;
+                     &lt;distortion_k3&gt;0.0&lt;/distortion_k3&gt;
+                     &lt;distortion_t1&gt;0.0&lt;/distortion_t1&gt;
+                     &lt;distortion_t2&gt;0.0&lt;/distortion_t2&gt;
+                     &lt;pointCloudCutoff&gt;0.4&lt;/pointCloudCutoff&gt;
+                     &lt;robotNamespace&gt;/&lt;/robotNamespace&gt;
+                   &lt;/plugin&gt; 
+              &lt;/link&gt;
+         &lt;/model&gt;
+    &lt;/world&gt;
+&lt;/sdf&gt; 
+</pre>
+
+<div id="Gazebo Web Interface Project-Select Gazebo Visuals from web interface"><h2 id="Select Gazebo Visuals from web interface">Select Gazebo Visuals from web interface</h2></div>
+<p>
+Work in progress
+</p>
+<div id="Gazebo Web Interface Project-Select Gazebo Visuals from web interface-Requirements"><h3 id="Requirements">Requirements</h3></div>
+<ul>
+<li>
+Select a Visual given pixel coordinates
+
+<ul>
+<li>
+Scene objects have a function GetVisual(CameraPtr, visual_name), unfortunately, cameras spawned in the world by an SDF file are part of the server, not the client, and gzclient's scene is unable to access them directly. One can supposedly spawn cameras in the client scene using a different function, but these won't be able to have Gazebo_ros plugins attached, so won't be able to stream the feed.
+
+<li>
+UserCameras also have a GetVisual(pixel coords) function, which is how the standard Gazebo GUI selects items when a user clicks on the screen. According to a gazebosim forum user, it would theoretically be possible to roll your own plugin for the system GUI to allow publishing of UserCamera data, but if possible, it's difficulty would be far outside of the scope of this project.
+
+<li>
+UserCameras can be moved to the world position of a visual. Custom SystemGUI plugin currently moves the UserCamera to the position of the ros camera so that its pixels can align with the pixels of that camera.
+
+</ul>
+<li>
+Get cursor click position from interface and publish to ROS topic
+
+<ul>
+<li>
+Click position can be acquired thanks to the canvas that the video stream is embedded in. Javascript code can calculate pixel coordinates.
+
+<li>
+TBD: Publish to ROS topic
+
+</ul>
+<li>
+Get cursor click position from ROS topic to SystemGUI plugin.
+
+<ul>
+<li>
+ros plugin is loaded in gzserver, so gzclient does not have access to it directly. gzserver and gzclient communicate via gazebo topics. Once the pixel coordinates are available via a ROS topic, will need to create a gzserver system plugin to subscribe to that topic and publish it to a gz topic. From there, SystemGUI plugin can read pixel coordinates into instanceOfUserCamera-&gt;GetVisual().
+
+</ul>
+</ul>
+<div id="Gazebo Web Interface Project-Select Gazebo Visuals from web interface-SystemGUI plugin"><h3 id="SystemGUI plugin">SystemGUI plugin</h3></div>
+<p>
+When gzclient invokes the System GUI plugins, it now does so before the scene object has been created. So, instead of using the init function as our "main" function to get the scene, we need to change the event listener that our updateConnection listen to in a chain. Initially binding updateConnection to ConnectPreRender allows us to get the userCam. Then we can bind updateConnection to the ConnectRender event, which will ensure that our request for the scene object isn't called until after it has been instantiated.
+</p>
+<pre cpp>
+private: virtual void Init(){
+    this-&gt;updateConnection = event::Events::ConnectPreRender(
+            boost::bind(&amp;SystemGUI::InitAtPreRenderEvent, this)
+             );
+    gui::MouseEventHandler::Instance()-&gt;AddPressFilter("glwidget", boost::bind(&amp;SystemGUI::OnMousePress, this, _1));
+}
+</pre>
+<pre>
+public: virtual void InitAtPreRenderEvent(){
+
+          // Get a pointer to the active user camera
+          this-&gt;userCam = gui::get_active_camera();
+
+          this-&gt;updateConnection = event::Events::ConnectRender(boost::bind(&amp;SystemGUI::OnUpdate, this));
+
+        }
+</pre>
+
+<p>
+Note that the Init function also subscribes an OnMousePress function to the GUI's MouseEventHandler-&gt;AddPressFilter, allowing us to intercept the mouse click coordinates. This is currenlty being used to test the instanceOfUserCamera-&gt;GetVisual() function, but ultimately will be replaced by the function that retrieves the mouse coordinates from a ROS topic (published from web interface)
+</p>
+<pre>
+private: bool OnMousePress(const common::MouseEvent&amp; _event)
+    {
+        boost::mutex::scoped_lock lock(mutexMouseClicked);
+        mouseClicked = _event.pos;
+        isMouseClicked = true;
+        std::cout&lt;&lt;"Clicked at "&lt;&lt;mouseClicked&lt;&lt;" of screen "&lt;&lt;std::endl;
+    }
+</pre>
+<div id="Gazebo Web Interface Project-Asyncronously generate buttons on web UI based on selected visual"><h2 id="Asyncronously generate buttons on web UI based on selected visual">Asyncronously generate buttons on web UI based on selected visual</h2></div>
+<p>
+[NOT STARTED]
+</p>
+
+<div id="Gazebo Web Interface Project-Perform actions on Gazebo client based on button visual"><h2 id="Perform actions on Gazebo client based on button visual">Perform actions on Gazebo client based on button visual</h2></div>
+<p>
+[NOT STARTED]
+</p>
+
+<div id="Gazebo Web Interface Project-Asyncronously generate buttons on web UI based on selected visual"><h2 id="Asyncronously generate buttons on web UI based on selected visual">Asyncronously generate buttons on web UI based on selected visual</h2></div>
+<p>
+[NOT STARTED]
+</p>
+
+<div id="Gazebo Web Interface Project-Perform actions on Gazebo client based on button visual"><h2 id="Perform actions on Gazebo client based on button visual">Perform actions on Gazebo client based on button visual</h2></div>
+<p>
+[NOT STARTED]
+</p>
+
+</body>
+</html>
